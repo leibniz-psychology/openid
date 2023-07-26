@@ -105,6 +105,10 @@
 						{else}
 							{fbvElement type="hidden" id="provider[{$name}][configUrl]" value=$settings['configUrl'] }
 						{/if}
+						{if $name eq 'orcid'}
+							{fbvElement type="checkbox" name="orcid2fa" id="orcid2fa" checked=$orcid2fa value="1" label="plugins.generic.openid.settings.orcid.orcid2fa.enable"}
+							<div style="clear: both;">&nbsp;</div>
+						{/if}
 						<div>
 							<div><strong>{translate key="plugins.generic.openid.settings.provider.settings"}</strong></div>
 							{fbvElement type="text" id="provider[{$name}][clientId]" value=$provider[{$name}]['clientId'] maxlength="250" label="plugins.generic.openid.settings.clientId.desc" inline=true size=$fbvStyles.size.MEDIUM}

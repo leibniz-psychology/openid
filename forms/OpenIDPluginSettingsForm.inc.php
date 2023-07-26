@@ -87,6 +87,7 @@ class OpenIDPluginSettingsForm extends Form
 				'generateAPIKey' => $settings['generateAPIKey'] ? $settings['generateAPIKey'] : 0,
 				'providerSync' => key_exists('providerSync', $settings) ? $settings['providerSync'] : false,
 				'disableFields' => $settings['disableFields'],
+				'orcid2fa' => key_exists('orcid2fa', $settings) ? $settings['orcid2fa'] : false,
 			);
 		} else {
 			$this->_data = array(
@@ -105,7 +106,7 @@ class OpenIDPluginSettingsForm extends Form
 	function readInputData()
 	{
 		$this->readUserVars(
-			array('provider', 'legacyLogin', 'legacyRegister', 'disableConnect', 'hashSecret', 'generateAPIKey', 'providerSync', 'disableFields')
+			array('provider', 'legacyLogin', 'legacyRegister', 'disableConnect', 'hashSecret', 'generateAPIKey', 'providerSync', 'disableFields', 'orcid2fa')
 		);
 		parent::readInputData();
 	}
@@ -157,6 +158,7 @@ class OpenIDPluginSettingsForm extends Form
 			'generateAPIKey' => $this->getData('generateAPIKey'),
 			'providerSync' => $this->getData('providerSync'),
 			'disableFields' => $this->getData('disableFields'),
+			'orcid2fa' => $this->getData('orcid2fa'),
 		);
 		$this->plugin->updateSetting($contextId, 'openIDSettings', json_encode($settings), 'string');
 		import('classes.notification.NotificationManager');

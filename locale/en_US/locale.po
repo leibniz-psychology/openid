@@ -123,6 +123,9 @@ msgstr "Please enter the label of the login button."
 msgid "plugins.generic.openid.settings.orcid.enable"
 msgstr "ORCID OpenID Connect"
 
+msgid "plugins.generic.openid.settings.orcid.orcid2fa.enable"
+msgstr "Require Two-Factor Authentication for OrcId login"
+
 msgid "plugins.generic.openid.settings.orcid.desc"
 msgstr "Please use this redirect URL (see <a href='https://github.com/ORCID/ORCID-Source/blob/master/orcid-web/ORCID_AUTH_WITH_OPENID_CONNECT.md' target='_blank' rel='noopener'>tutorial</a>):"
 
@@ -236,6 +239,9 @@ msgstr "<strong>An error occurred while receiving your data from the OpenId prov
 
 msgid "plugins.generic.openid.error.openid.cert.desc"
 msgstr "<strong>An error occurred while validation and extracting your data.</strong><br />The service may not be available right now.<br />Please try again later and <a href='mailto:{$supportEmail}'>contact technical support</a> if the problem still exists."
+
+msgid "plugins.generic.openid.error.openid.orcid2fa.desc"
+msgstr "Orcid two-factor authentication is required for login. Please go to <a href=\"https://orcid.org\">orcid.org</a>, log into your Orcid profile and turn on two-factor authentication in the security section of your account settings."
 
 msgid "plugins.generic.openid.error.openid.disabled.without"
 msgstr "<strong>This account is disabled without any specific reason.</strong><br />Please <a href='mailto:{$supportEmail}'>contact technical support</a> to enable this account."

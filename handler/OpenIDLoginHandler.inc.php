@@ -51,7 +51,6 @@ class OpenIDLoginHandler extends Handler
 		$legacyLogin = false;
 		$templateMgr = TemplateManager::getManager($request);
 		$context = $request->getContext();
-
 		if (!Validation::isLoggedIn()) {
 			$router = $request->getRouter();
 			$contextId = ($context == null) ? 0 : $context->getId();
@@ -67,7 +66,9 @@ class OpenIDLoginHandler extends Handler
 					foreach ($providerList as $name => $settings) {
 						if (key_exists('authUrl', $settings) && !empty($settings['authUrl'])
 							&& key_exists('clientId', $settings) && !empty($settings['clientId'])) {
-							if (sizeof($providerList) == 1 && !$legacyLogin && !$legacyRegister) {
+				//if there is a single provider, make sure there are no login errors before redirecting
+				$ssoErrorCheck = $request->getUserVar('sso_error');
+				if (sizeof($providerList) == 1 && !$legacyLogin && !$legacyRegister && !isset($ssoErrorCheck) && empty($ssoErrorCheck)) {
 								$request->redirectUrl(
 									$settings['authUrl'].
 									'?client_id='.$settings['clientId'].
@@ -221,6 +222,9 @@ class OpenIDLoginHandler extends Handler
 				break;
 			case 'cert':
 				$templateMgr->assign('errorMsg', 'plugins.generic.openid.error.openid.cert.desc');
+				break;
+			case '2fa':
+                                $templateMgr->assign('errorMsg', 'plugins.generic.openid.error.openid.orcid2fa.desc');
 				break;
 			case 'disabled':
 				$reason = $request->getUserVar('sso_error_msg');

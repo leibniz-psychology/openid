@@ -75,6 +75,11 @@ class OpenIDHandler extends Handler
 
 		if (isset($token) && isset($publicKey)) {
 			$tokenPayload = $this->_validateAndExtractToken($token, $publicKey);
+                        //check if orcid two-factor authentication is required
+                        if ($settings['orcid2fa'] == true && $tokenPayload['amr'] != 'mfa') {
+				$ssoErrors['sso_error'] = '2fa';
+                		return $request->redirect($context, 'login', null, null, $ssoErrors);
+			}
 			if (isset($tokenPayload) && is_array($tokenPayload)) {
 				$tokenPayload['selectedProvider'] = $selectedProvider;
 				$user = $this->_getUserViaKeycloakId($tokenPayload);
@@ -391,7 +396,6 @@ class OpenIDHandler extends Handler
 				try {
 					if (!empty($t)) {
 						$jwtPayload = JWT::decode($t, $publicKey, array('RS256'));
-
 						if (isset($jwtPayload)) {
 							$credentials = [
 								'id' => property_exists($jwtPayload, 'sub') ? $jwtPayload->sub : null,
@@ -400,6 +404,8 @@ class OpenIDHandler extends Handler
 								'given_name' => property_exists($jwtPayload, 'given_name') ? $jwtPayload->given_name : null,
 								'family_name' => property_exists($jwtPayload, 'family_name') ? $jwtPayload->family_name : null,
 								'email_verified' => property_exists($jwtPayload, 'email_verified') ? $jwtPayload->email_verified : null,
+						//orcid property for checking two factor authentication status 
+								'amr' => property_exists($jwtPayload, 'amr') ? $jwtPayload->amr : null,
 							];
 						}
 						if (isset($credentials) && key_exists('id', $credentials) && !empty($credentials['id'])) {
