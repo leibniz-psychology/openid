@@ -50,6 +50,7 @@
 			<li class="page_login">
 				<form class="cmp_form cmp_form login" id="login" method="post" action="{$loginUrl}">
 					{csrf}
+					<input type="hidden" name="source" value="{$source|default:""|escape}" />
 					<fieldset class="fields">
 						<div class="username">
 							<label>
@@ -101,7 +102,7 @@
 			<li class="margin-top-30"><strong>{translate key='plugins.generic.openid.select.provider.help'}</strong></li>
 			{foreach from=$linkList key=name item=url}
 				{if $name == 'custom'}
-					<li><a id="openid-provider-{$name}" href="{$url}">
+					<li><a id="openid-provider-{$name}" href="{$url}%26source={$source|default:""|escape:"url"}">
 							<div>
 								{if $customBtnImg}
 									<img src="{$customBtnImg}" alt="{$name}">

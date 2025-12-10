@@ -1,7 +1,5 @@
 <?php
 
-import('lib.pkp.classes.plugins.GenericPlugin');
-
 /**
  * This file is part of OpenID Authentication Plugin (https://github.com/leibniz-psychology/pkp-openid).
  *
@@ -25,7 +23,7 @@ import('lib.pkp.classes.plugins.GenericPlugin');
  * @brief OpenIDPlugin class for plugin and handler registration
  *
  */
-class OpenIDPlugin extends GenericPlugin
+class OpenIDPlugin extends \PKP\plugins\GenericPlugin
 {
 	function isSitePlugin()
 	{

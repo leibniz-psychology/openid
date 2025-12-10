@@ -24,7 +24,7 @@
  * @brief Wrapper for OpenID Authentication Plugin.
  *
  */
-require_once('OpenIDPlugin.inc.php');
+require_once('OpenIDPlugin.php');
 
 return new OpenIDPlugin();
 

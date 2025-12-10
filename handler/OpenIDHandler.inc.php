@@ -88,13 +88,26 @@ class OpenIDHandler extends Handler
 					Validation::registerUserSession($user, $reason, true);
 
 					self::updateUserDetails($tokenPayload, $user, $request, $selectedProvider);
-					if ($user->hasRole(
+
+					// check if the user tried to access a specific page
+					// we needed to set the source as a session variable to work with openId providers 
+					$session = $request->getSession();
+					$source = $session->getSessionVar('source');
+					$session->unsetSessionVar('source', $source);
+					$sessionDao = DAORegistry::getDAO('SessionDAO');
+					$sessionDao->updateObject($session);					
+
+					if ($source != '') {
+						// The user tried to access a specific page before authentication: load that page
+						return $request->redirectUrl($source);
+					}
+					elseif ($user->hasRole(
 						[ROLE_ID_SITE_ADMIN, ROLE_ID_MANAGER, ROLE_ID_SUB_EDITOR, ROLE_ID_AUTHOR, ROLE_ID_REVIEWER, ROLE_ID_ASSISTANT],
 						$contextId
 					)) {
-						return $request->redirect($context, 'submissions');
+						return $request->redirect($request->getRequestedContextPath(), 'submissions');
 					} else {
-						return $request->redirect($context, 'user', 'profile', null, $args);
+						return $request->redirect($request->getRequestedContextPath(), 'user', 'profile', null, $args);
 					}
 				} elseif ($user->getDisabled()) {
 					$reason = $user->getDisabledReason();
@@ -110,7 +123,7 @@ class OpenIDHandler extends Handler
 			$ssoErrors['sso_error'] = !isset($publicKey) ? 'connect_key' : 'connect_data';
 		}
 
-		return $request->redirect($context, 'login', null, null, isset($ssoErrors) ? $ssoErrors : null);
+		return $request->redirect($request->getRequestedContextPath(), 'login', null, null, isset($ssoErrors) ? $ssoErrors : null);
 	}
 
 
@@ -129,9 +142,15 @@ class OpenIDHandler extends Handler
 			$this->setupTemplate($request);
 			$templateMgr = TemplateManager::getManager($request);
 			$templateMgr->assign('pageTitle', 'user.login.registrationComplete');
+
+			// Register the jQuery script before the orcidProfile js is executed
+			$min = Config::getVar('general', 'enable_minified') ? '.min' : '';
+			$jqueryUrl = $request->getBaseUrl() . '/lib/pkp/lib/vendor/components/jquery/jquery' . $min . '.js';
+			$templateMgr->assign('jqueryUrl', $jqueryUrl);
+
 			$templateMgr->display('frontend/pages/userRegisterComplete.tpl');
 		} elseif (!$request->isPost()) {
-			$request->redirect($context, 'login');
+			$request->redirect($request->getRequestedContextPath(), 'login');
 		} else {
 			$plugin = PluginRegistry::getPlugin('generic', KEYCLOAK_PLUGIN_NAME);
 			import($plugin->getPluginPath().'/forms/OpenIDStep2Form');
@@ -140,7 +159,7 @@ class OpenIDHandler extends Handler
 			if (!$regForm->validate()) {
 				$regForm->display($request);
 			} elseif ($regForm->execute()) {
-				$request->redirect($context, 'openid', 'registerOrConnect');
+				$request->redirect($request->getRequestedContextPath(), 'openid', 'registerOrConnect');
 			} else {
 				$regForm->addError('', '');
 				$regForm->display($request);
@@ -174,6 +193,7 @@ class OpenIDHandler extends Handler
 					$user->setOrcid($payload['id']);
 				}
 			}
+			
 			$userDao->updateObject($user);
 		}
 

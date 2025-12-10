@@ -309,6 +309,9 @@ class OpenIDStep2Form extends Form
 			$user = null;
 		}
 
+		// allow other plugins to provide user data (i.e. orcidProfile)
+		HookRegistry::call('openid::registerUser', array($this,&$user));
+
 		return $user;
 	}
 }

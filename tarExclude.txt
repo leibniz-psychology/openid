@@ -1,0 +1,7 @@
+.github
+cypress
+docker
+docker-compose.yaml
+composer.json
+composer.lock
+tarExclude.txt

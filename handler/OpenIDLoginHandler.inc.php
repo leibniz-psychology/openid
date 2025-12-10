@@ -57,6 +57,14 @@ class OpenIDLoginHandler extends Handler
 			$contextId = ($context == null) ? 0 : $context->getId();
 			$settingsJson = $plugin->getSetting($contextId, 'openIDSettings');
 
+			// Did the user try to access a specific page? 
+			// Then we want to preserve this information to redirect correctly after login
+			$source =  $request->getUserVar('source');
+			$session = $request->getSession();
+			$session->setSessionVar('source', $source);
+			$sessionDao = DAORegistry::getDAO('SessionDAO');
+			$sessionDao->updateObject($session);
+
 			if ($settingsJson != null) {
 				$settings = json_decode($settingsJson, true);
 				$legacyLogin = key_exists('legacyLogin', $settings) && isset($settings['legacyLogin']) ? $settings['legacyLogin'] : false;
@@ -72,7 +80,8 @@ class OpenIDLoginHandler extends Handler
 									$settings['authUrl'].
 									'?client_id='.$settings['clientId'].
 									'&response_type=code&scope=openid&redirect_uri='.
-									$router->url($request, null, "openid", "doAuthentication", null, array('provider' => $name))
+									$router->url($request, null, "openid", "doAuthentication", null, array('provider' => $name),null,true)
+									//($source != '' ? urlencode('&state=' . $source) : '')
 								);
 
 								return false;
@@ -130,7 +139,7 @@ class OpenIDLoginHandler extends Handler
 			return $templateMgr->display($plugin->getTemplateResource('openidLogin.tpl'));
 		}
 
-		$request->redirect(Application::get()->getRequest()->getContext(), 'index');
+		$request->redirect($request->getRequestedContextPath(), 'index');
 
 		return false;
 	}
@@ -199,7 +208,7 @@ class OpenIDLoginHandler extends Handler
 				}
 			}
 		}
-		$request->redirect(Application::get()->getRequest()->getContext(), 'index');
+		$request->redirect($request->getRequestedContextPath(), 'index');
 	}
 
 	/**
